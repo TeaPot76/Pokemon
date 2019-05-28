@@ -1,6 +1,6 @@
 import React from 'react';
-import PokemonSelect from '../components/PokemonSelect';
-import Pokemon from '../components/Pokemon';
+import PokemonSelect from '../components/PokemonSelect.js';
+import Pokemon from '../components/Pokemon.js';
 
 
 class PokemonBox extends React.Component {
@@ -8,7 +8,9 @@ class PokemonBox extends React.Component {
     super(props);
     this.state = {
       pokemons: [],
-      currentPokemon: null
+      currentPokemon: null,
+      currentPokemonSpecies: null,
+
     };
     this.changePokemon = this.changePokemon.bind(this);
 
@@ -18,14 +20,28 @@ class PokemonBox extends React.Component {
     const url='http://pokeapi.co/api/v2/pokemon/?limit=151';
     fetch(url)
     .then((res)=> res.json())
-    .then((pokemons) => {
-    this.setState({pokemons: pokemons.results})
+    .then((allPokemons) => {
+    this.setState({pokemons: allPokemons.results})
    });
   }
 
   changePokemon(selectedIndex){
-    const selectedPokemon = this.state.pokemons[selectedIndex];
-    this.setState({selectedPokemon});
+    const currentPokemon = this.state.pokemons[selectedIndex];
+    const currentPokemonUrl = currentPokemon.url;
+
+    fetch(currentPokemonUrl)
+    .then((res) => res.json())
+    .then((pokemonObject) => {
+      this.setState({currentPokemon: pokemonObject})
+
+      const speciesUrl = pokemonObject.species.url;
+      fetch(speciesUrl)
+      .then((res)=> res.json())
+      .then((speciesObject) =>{
+        this.setState({currentPokemonSpecies: speciesObject})
+      })
+    })
+
   }
 
   render(){
@@ -34,8 +50,10 @@ class PokemonBox extends React.Component {
       <PokemonSelect
       pokemons={this.state.pokemons}
       onChangePokemon ={this.changePokemon}/>
-      <Pokemon pokemon = {this.state.currentPokemon}
-      />
+      <Pokemon
+       pokemon = {this.state.currentPokemon}
+       pokemonSpecies = {this.state.currentPokemonSpecies}
+       />
       </div>
     )
   }

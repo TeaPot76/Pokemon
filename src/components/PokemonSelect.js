@@ -1,22 +1,23 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 const PokemonSelect = (props) => {
   const options = props.pokemons.map((pokemon, index) =>{
-    return <option value={index}
-    key={index}>
+    return(
+      <option key={index} value={index}>
     {pokemon.name}</option>
-  })
+  )
+  });
 
 function handleChange(evt){
-  props.onChangePokemon(evt.target.value);
-  console.log(evt.target.value)
+  const selectedIndex = evt.target.value;
+  props.onChangePokemon(selectedIndex);
 }
 
 return (
   <select id="pokemon-selector"
-  onChange={handleChange}
-  defaultValue="default">
-  <option disabled value = "default">Choose a Pokemon </option>
+  defaultValue="default"
+  onChange={handleChange}>
+  <option disabled value ="default">Choose a Pokemon </option>
   {options}
   </select>
 )}
